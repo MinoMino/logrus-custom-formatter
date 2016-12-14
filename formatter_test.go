@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/MinoMino/logrus"
 	"github.com/rifflock/lfshook"
 	"github.com/stretchr/testify/require"
 )

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/MinoMino/logrus"
 )
 
 // ANSI color codes.

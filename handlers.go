@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/MinoMino/logrus"
 )
 
 var _reBracketed = regexp.MustCompile(`%([\d.-]*)\[(\w+)](\w)`)

@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/MinoMino/logrus"
 	"github.com/stretchr/testify/require"
 )
 
