@@ -2,6 +2,7 @@ package lcf
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,6 +30,57 @@ func (s *MockSysCall) setConsoleMode(mode uintptr) (uintptr, error) {
 	return s.setConsoleModeR1, s.setConsoleModeError
 }
 
+// Clear any environment variables indicating colors are supported by ANSICON or ConEmu.
+func disableNonnative() {
+	os.Setenv("ConEmuANSI", "")
+	os.Setenv("ANSICON", "")
+	os.Setenv("ANSICON_VER", "")
+}
+
+// Enable ConEmu ANSI support.
+func enableConEmu() {
+	os.Setenv("ConEmuANSI", "ON")
+}
+
+// Enable ConEmu ANSI support.
+func enableANSICON() {
+	// Typical ANSICON environment variables.
+	os.Setenv("ANSICON", "80x300")
+	os.Setenv("ANSICON_VER", "166")
+}
+
+// Keep native disabled and test nonnative color support.
+func Test_windowsNativeANSI_NonNative(t *testing.T) {
+	assert := require.New(t)
+	sc := &MockSysCall{3, nil, nil, 1, nil}
+
+	// No nonnative support.
+	disableNonnative()
+	enabled, err := windowsNativeANSI(false, false, sc)
+	assert.NoError(err)
+	assert.False(enabled)
+
+	// Enable ConEmu color support.
+	enableConEmu()
+	enabled, err = windowsNativeANSI(false, false, sc)
+	assert.NoError(err)
+	assert.True(enabled)
+	disableNonnative()
+
+	// Enable ANSICON color support.
+	enableANSICON()
+	enabled, err = windowsNativeANSI(false, false, sc)
+	assert.NoError(err)
+	assert.True(enabled)
+
+	// Enable ConEmu now, meaning both are enabled.
+	enableConEmu()
+	enabled, err = windowsNativeANSI(false, false, sc)
+	assert.NoError(err)
+	assert.True(enabled)
+	disableNonnative()
+}
+
 func Test_windowsNativeANSI_Good(t *testing.T) {
 	assert := require.New(t)
 	sc := &MockSysCall{3, nil, nil, 1, nil}
@@ -51,27 +103,27 @@ func Test_windowsNativeANSI_Good(t *testing.T) {
 
 func Test_windowsNativeANSI_BadSet(t *testing.T) {
 	assert := require.New(t)
-	sc := &MockSysCall{3, nil, nil, 0, errors.New("The parameter is incorrect.")}
+	sc := &MockSysCall{3, nil, nil, 0, errors.New("the parameter is incorrect")}
 
 	enabled, err := windowsNativeANSI(false, true, sc)
-	assert.EqualError(err, "The parameter is incorrect.")
+	assert.EqualError(err, "the parameter is incorrect")
 	assert.False(enabled)
 }
 
 func Test_windowsNativeANSI_BadGetConsole(t *testing.T) {
 	assert := require.New(t)
-	sc := &MockSysCall{3, nil, errors.New("The handle is invalid."), 1, nil}
+	sc := &MockSysCall{3, nil, errors.New("the handle is invalid"), 1, nil}
 
 	enabled, err := windowsNativeANSI(false, false, sc)
-	assert.EqualError(err, "The handle is invalid.")
+	assert.EqualError(err, "the handle is invalid")
 	assert.False(enabled)
 }
 
 func Test_windowsNativeANSI_BadGetMode(t *testing.T) {
 	assert := require.New(t)
-	sc := &MockSysCall{3, errors.New("The handle is invalid."), nil, 1, nil}
+	sc := &MockSysCall{3, errors.New("the handle is invalid"), nil, 1, nil}
 
 	enabled, err := windowsNativeANSI(false, false, sc)
-	assert.EqualError(err, "The handle is invalid.")
+	assert.EqualError(err, "the handle is invalid")
 	assert.False(enabled)
 }
