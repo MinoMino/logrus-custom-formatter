@@ -1,5 +1,5 @@
 /*
-Package lcf (logrus-custom-formatter) is a customizable formatter for https://github.com/sirupsen/logrus that lets you
+Package lcf (logrus-custom-formatter) is a customizable formatter for https://github.com/MinoMino/logrus that lets you
 choose which columns to include in your log outputs.
 
 Windows Support
@@ -22,7 +22,7 @@ Below is a simple example program that uses lcf with logrus:
 
 	import (
 		lcf "github.com/Robpol86/logrus-custom-formatter"
-		"github.com/sirupsen/logrus"
+		"github.com/MinoMino/logrus"
 	)
 
 	func main() {

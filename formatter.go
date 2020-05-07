@@ -2,8 +2,11 @@ package lcf
 
 import (
 	"bytes"
+	"os"
 	"runtime"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/MinoMino/logrus"
 )
@@ -98,7 +101,7 @@ func NewFormatter(template string, custom CustomHandlers) *CustomFormatter {
 	formatter.ParseTemplate(template, custom)
 
 	// Disable colors if not supported.
-	if !logrus.IsTerminal() || (runtime.GOOS == "windows" && !WindowsNativeANSI()) {
+	if !terminal.IsTerminal(int(os.Stdout.Fd())) || (runtime.GOOS == "windows" && !WindowsNativeANSI()) {
 		formatter.DisableColors = true
 	}
 
